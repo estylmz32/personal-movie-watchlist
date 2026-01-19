@@ -229,7 +229,13 @@ export default function Watchlist() {
           <ul className="grid">
             {visibleList.map((m) => (
               <li key={m.id} className="card">
-                <Link className="cardLink" to={`/details/${m.id}`} aria-label={`Open details for ${m.title}`}>
+                
+                <Link
+                  className="cardLink"
+                  to={`/details/${m.id}`}
+                  state={{ from: "/watchlist" }}
+                  aria-label={`Open details for ${m.title}`}>
+
                   <div className="posterWrap">
                     {m.poster_path ? (
                       <img className="poster" src={IMG + m.poster_path} alt={m.title} loading="lazy" />

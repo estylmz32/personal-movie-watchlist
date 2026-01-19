@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../utils/watchlist";
 
 const API = "https://api.themoviedb.org/3";
@@ -36,6 +36,7 @@ function loadSession(key, fallback) {
 export default function Details() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [movie, setMovie] = useState(null);
   const [director, setDirector] = useState("");
@@ -111,6 +112,13 @@ export default function Details() {
   }
 
   function goBack() {
+    const from = location.state?.from;
+
+    if (from) {
+      navigate(from);
+      return;
+    }
+
     const restore = loadSession(SESSION_RESTORE_KEY, null);
     navigate("/search", { state: restore ? { restore } : undefined });
   }

@@ -11,7 +11,6 @@ import "../styles/watchlist.css";
 
 const IMG = "https://image.tmdb.org/t/p/w342";
 
-
 function Stars({ value, disabled, onChange }) {
   return (
     <div className={disabled ? "stars starsDisabled" : "stars"}>
@@ -128,7 +127,9 @@ export default function Watchlist() {
     const avgRating =
       rated.length === 0
         ? null
-        : Math.round((rated.reduce((s, m) => s + Number(m.rating), 0) / rated.length) * 10) / 10;
+        : Math.round(
+            (rated.reduce((s, m) => s + Number(m.rating), 0) / rated.length) * 10
+          ) / 10;
 
     return { total, watchedCount, remaining, progress, avgRating };
   }, [list]);
@@ -228,28 +229,28 @@ export default function Watchlist() {
           <ul className="grid">
             {visibleList.map((m) => (
               <li key={m.id} className="card">
-                <div className="posterWrap">
-                  {m.poster_path ? (
-                    <img className="poster" src={IMG + m.poster_path} alt={m.title} loading="lazy" />
-                  ) : (
-                    <div className="posterFallback">No poster</div>
-                  )}
-                </div>
+                <Link className="cardLink" to={`/details/${m.id}`} aria-label={`Open details for ${m.title}`}>
+                  <div className="posterWrap">
+                    {m.poster_path ? (
+                      <img className="poster" src={IMG + m.poster_path} alt={m.title} loading="lazy" />
+                    ) : (
+                      <div className="posterFallback">No poster</div>
+                    )}
+                  </div>
 
-                <div className="cardTop">
-                  <div className="cardTitle">
-                    <Link className="movieLink" to={`/details/${m.id}`}>
-                      {m.title}
-                    </Link>
-                    <div className="year">
-                      {m.release_date?.slice(0, 4) ? `(${m.release_date.slice(0, 4)})` : ""}
+                  <div className="cardTop">
+                    <div className="cardTitle">
+                      <div className="movieLink">{m.title}</div>
+                      <div className="year">
+                        {m.release_date?.slice(0, 4) ? `(${m.release_date.slice(0, 4)})` : ""}
+                      </div>
+                    </div>
+
+                    <div className={m.watched ? "badge badgeOk" : "badge"}>
+                      {m.watched ? "Watched ✓" : "Not watched"}
                     </div>
                   </div>
-
-                  <div className={m.watched ? "badge badgeOk" : "badge"}>
-                    {m.watched ? "Watched ✓" : "Not watched"}
-                  </div>
-                </div>
+                </Link>
 
                 <div className="ratingRow">
                   <div className="ratingLabel">{m.watched ? "Your rating" : "Watch first to rate"}</div>

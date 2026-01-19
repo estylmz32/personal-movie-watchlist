@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../utils/watchlist";
 
 const API = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
@@ -22,21 +23,6 @@ async function tmdb(path, params = {}) {
   return res.json();
 }
 
-function loadWatchlist() {
-  try {
-    const raw = localStorage.getItem("watchlist");
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveWatchlist(list) {
-  localStorage.setItem("watchlist", JSON.stringify(list));
-}
-
 function loadSession(key, fallback) {
   try {
     const raw = sessionStorage.getItem(key);
@@ -57,11 +43,11 @@ export default function Details() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  const [watchlist, setWatchlist] = useState(() => loadWatchlist());
+  const [watchlist, setWatchlist] = useState(() => getWatchlist());
 
   useEffect(() => {
-    saveWatchlist(watchlist);
-  }, [watchlist]);
+    setWatchlist(getWatchlist());
+  }, [id]);
 
   const inWatchlist = useMemo(() => watchlist.some((x) => String(x.id) === String(id)), [watchlist, id]);
 
@@ -104,22 +90,24 @@ export default function Details() {
   function toggleWatchlist() {
     if (!movie || !movie.id) return;
 
-    setWatchlist((prev) => {
-      const exists = prev.some((x) => String(x.id) === String(movie.id));
-      if (exists) return prev.filter((x) => String(x.id) !== String(movie.id));
+    const exists = getWatchlist().some((x) => String(x.id) === String(movie.id));
 
-      const item = {
+    if (exists) {
+      removeFromWatchlist(movie.id);
+    } else {
+      addToWatchlist({
         id: movie.id,
         title: movie.title || "",
         poster_path: movie.poster_path || "",
         release_date: movie.release_date || "",
         watched: false,
-        rating: "",
+        rating: null,
         note: "",
         addedAt: Date.now(),
-      };
-      return [item, ...prev];
-    });
+      });
+    }
+
+    setWatchlist(getWatchlist());
   }
 
   function goBack() {

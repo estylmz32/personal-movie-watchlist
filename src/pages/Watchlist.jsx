@@ -9,6 +9,9 @@ import {
 } from "../utils/watchlist";
 import "../styles/watchlist.css";
 
+const IMG = "https://image.tmdb.org/t/p/w342";
+
+
 function Stars({ value, disabled, onChange }) {
   return (
     <div className={disabled ? "stars starsDisabled" : "stars"}>
@@ -225,6 +228,14 @@ export default function Watchlist() {
           <ul className="grid">
             {visibleList.map((m) => (
               <li key={m.id} className="card">
+                <div className="posterWrap">
+                  {m.poster_path ? (
+                    <img className="poster" src={IMG + m.poster_path} alt={m.title} loading="lazy" />
+                  ) : (
+                    <div className="posterFallback">No poster</div>
+                  )}
+                </div>
+
                 <div className="cardTop">
                   <div className="cardTitle">
                     <Link className="movieLink" to={`/details/${m.id}`}>
